@@ -9,7 +9,8 @@ import android.view.View;
 
 /**
  * 宿主连上了、还没给读数据的授权时，顶上一张小卡片（车况、音乐要宿主授权；宠物、时钟照常）：
- * "申请授权"弹宿主的确认页，"以后再说"这次不再提（设置里还有一行"车机数据 › 申请授权"）
+ * "申请授权"弹宿主的确认页，"以后再说"这次不再提（设置里还有一行申请授权）。
+ * 连上之后卡片顶上写着连的是 BydModule 还是 UiSetting。
  */
 final class InfoBar extends View {
     private final App app;
@@ -25,20 +26,29 @@ final class InfoBar extends View {
 
     @Override protected void onDraw(Canvas c) {
         float rem = app.u.px(app.u.rem), W = getWidth();
-        float w = Math.min(5.6f * rem, W * .92f), h = 1.5f * rem, x = (W - w) / 2, y = .3f * rem;
+        String host = app.boundHost();
+        String line = host.isEmpty() ? "" : "已连接 " + host;
+        float extra = line.isEmpty() ? 0f : .26f * rem;
+        float w = Math.min(5.6f * rem, W * .92f), h = 1.5f * rem + extra, x = (W - w) / 2, y = .3f * rem;
         box.set(x, y, x + w, y + h);
         p.setColor(0xf7ffffff);
         p.setShadowLayer(.3f * rem / 2, 0, .06f * rem, 0x40000000);
         c.drawRoundRect(box, .24f * rem, .24f * rem, p);
         p.clearShadowLayer();
+        if (!line.isEmpty()) {
+            p.setTypeface(Fonts.sys);
+            p.setTextSize(.16f * rem);
+            p.setColor(0xff8a8f99);
+            c.drawText(line, x + .3f * rem, y + .32f * rem, p);
+        }
         p.setTypeface(Fonts.sysBold);
         p.setTextSize(.26f * rem);
         p.setColor(0xff222222);
-        c.drawText("要读取车况和音乐", x + .3f * rem, y + .5f * rem, p);
+        c.drawText("要读取车况和音乐", x + .3f * rem, y + .5f * rem + extra, p);
         p.setTypeface(Fonts.sys);
         p.setTextSize(.19f * rem);
         p.setColor(0xff8a8f99);
-        c.drawText("在宿主弹出的确认页里允许；宠物和时钟照常", x + .3f * rem, y + .86f * rem, p);
+        c.drawText("在宿主弹出的确认页里允许；宠物和时钟照常", x + .3f * rem, y + .86f * rem + extra, p);
         float bh = .5f * rem, bw = 1.5f * rem, by = y + h - bh - .2f * rem;
         ask.set(x + w - .3f * rem - bw, by, x + w - .3f * rem, by + bh);
         later.set(ask.left - .2f * rem - bw, by, ask.left - .2f * rem, by + bh);

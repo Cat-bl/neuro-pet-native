@@ -32,10 +32,10 @@ import java.util.Set;
  * 字段目录是 assets 的 fields.json（全部车况也用），操作目录是 actions.json（_apk/pet/assets.mjs 从网页版的目录里拿出来）。改过的存在 SharedPreferences petdebug
  */
 final class DebugHost implements Host {
-    /** 用不用调试宿主：没装宿主，或者没有比亚迪的系统应用（不是车机）。车上永远走真宿主 */
+    /** 用不用调试宿主：BydModule 和 UiSetting 都没装，或者没有比亚迪的系统应用（不是车机）。车上永远走真宿主，再由真宿主按 BydModule、UiSetting 的顺序绑 */
     static boolean wanted(Context c) {
         PackageManager pm = c.getPackageManager();
-        if (!installed(pm, "com.wzw.bydmodule")) return true;
+        if (!installed(pm, "com.wzw.bydmodule") && !installed(pm, "com.wzw.uisetting")) return true;
         for (String p : new String[] { "com.byd.car.server", "com.byd.autovoice", "com.byd.rapidmode", "com.byd.carsettings", "com.byd.systemsettings" }) if (installed(pm, p)) return false;
         return true;
     }

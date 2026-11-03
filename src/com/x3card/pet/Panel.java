@@ -159,7 +159,9 @@ final class Panel extends FrameLayout {
             body.addView(tip, p);
         }
         if (app.guide != null) body.addView(k.row("新手引导", k.link("再看一遍 ›", () -> { app.closePanel(); app.later(() -> app.guide.start(), 350); })));
-        if (app.infoNeeded()) body.addView(k.row("车机数据", k.link("申请授权 ›", () -> { app.closePanel(); app.authorize(); })));
+        String bound = app.boundHost();
+        if (app.infoNeeded()) body.addView(k.row(bound.isEmpty() ? "车机数据" : "已连接 " + bound, k.link("申请授权 ›", () -> { app.closePanel(); app.authorize(); })));
+        else if (!bound.isEmpty()) body.addView(k.row("已连接 " + bound, null));
     }
     private CharSequence levelText(String name, String pack) {
         android.text.SpannableStringBuilder b = new android.text.SpannableStringBuilder(name + " ");

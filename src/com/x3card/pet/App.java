@@ -963,6 +963,8 @@ final class App {
     }
     /** 宿主连上了但还没给读数据的授权（车况、音乐都拿不到） */
     boolean infoNeeded() { return host != null && host.ready() && !host.canRead(); }
+    /** 这次会话连上的宿主（BydModule / UiSetting）；调试宿主或还没连上是空的 */
+    String boundHost() { return host instanceof Uiplus ? ((Uiplus) host).connectedHost() : ""; }
     void authorize() { if (activity != null) activity.authorize(); }
     void toast(String s) { android.widget.Toast.makeText(ctx, s, android.widget.Toast.LENGTH_LONG).show(); }
     /** 手指按在界面元素上（面板、按钮、页面……）：齿轮跟着出来；音乐键、带按钮的气泡不弹（同网页版 [data-mc]） */
