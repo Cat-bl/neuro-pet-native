@@ -450,6 +450,15 @@ final class AiRoom implements Frames.Client {
             bg.clearShadowLayer();
         }
         @Override public boolean onTouchEvent(MotionEvent e) { return true; }
+        /** 消息列表裁在自己的范围里：滚上去的消息不画到标题栏上（别的子视图不裁，"有新消息"的阴影要画出边界） */
+        @Override protected boolean drawChild(Canvas c, View child, long t) {
+            if (child != list) return super.drawChild(c, child, t);
+            c.save();
+            c.clipRect(list.getLeft(), list.getTop(), list.getRight(), list.getBottom());
+            boolean more = super.drawChild(c, child, t);
+            c.restore();
+            return more;
+        }
 
         /** 头像：圆里放站立图的脸（同 background-size 250%、位置 50% 16%），外面一圈白边 */
         void avatar(Canvas c, float x, float y, float D, boolean evil) {
