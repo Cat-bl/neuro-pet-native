@@ -2,7 +2,7 @@
 
 比亚迪车机上的桌宠：Neuro 和 Evil 两只宠物住在一片扁平风格的风景里，上面是时钟、日期农历和车况胶囊。放进车机的多窗口（双画中画）或悬浮窗口里用。
 
-车况、歌词、封面来自 4.5UI（宿主应用 BydModule）；画面用安卓原生控件画，不经过浏览器内核。没装宿主的设备上用模拟的车况。
+车况、歌词、封面来自 4.5UI 的 UiPlus（宿主优先 BydModule，没有则 UiSetting）；画面用安卓原生控件画，不经过浏览器内核。没装宿主的设备上用模拟的车况。
 
 ## 画面
 
@@ -25,7 +25,7 @@
 
 ## 在车上用
 
-要有：比亚迪车机（Android 9 以上），装好 4.5UI（宿主应用 BydModule，包名 `com.wzw.bydmodule`）。实车用过的 4.5UI 版本是 2.2.1.6 到 2.2.1.18，更早的版本可能还没有给外部应用的接口。
+要有：比亚迪车机（Android 9 以上），装好一个 UiPlus 宿主。优先 4.5UI（BydModule，包名 `com.wzw.bydmodule`）；没装它时用 UiSetting（包名 `com.wzw.uisetting`）。两个都在时只连 BydModule。实车用过的 4.5UI 版本是 2.2.1.6 到 2.2.1.18，更早的版本可能还没有给外部应用的接口。
 
 1. 把 APK 装到车机上，比如 `adb install -r xxx.apk`。
 2. 在比亚迪「系统加速 → 应用加速管理」里给它打开"允许在后台运行"。不开的话，车机内存紧张时宿主的授权页一盖上来，系统就会把应用结束，授权申请跟着作废。
@@ -37,7 +37,9 @@
 - uiplus Android 接口（这个应用用的）：https://u223v6sxpn.apifox.cn
 - uiplus JS 接口（网页卡片用的）：https://1yquh73bv5.apifox.cn
 
-应用绑定宿主的 `com.wzw.bydmodule/.uiplus.UiplusExternalService`，开会话、申请授权，再按方法名发请求、收订阅推送；方法名和参数同网页卡片的 `window.uiplus`。对接时踩过的坑（授权页、宿主后端晚好、会话超时等）写在 `src/` 里 `Uiplus.java` 的开头。
+应用按顺序绑定宿主服务：先 `com.wzw.bydmodule/.uiplus.UiplusExternalService`，绑不上或没有这个服务再 `com.wzw.uisetting/.uiplus.external.UiplusExternalService`。开会话用的 AIDL 描述符固定是 `com.wzw.bydmodule.uiplus.IUiplusApi` / `IUiplusCallback`（连 UiSetting 时也不改写）。然后申请授权，再按方法名发请求、收订阅推送；方法名和参数同网页卡片的 `window.uiplus`。对接时踩过的坑（授权页、宿主后端晚好、会话超时等）写在 `src/` 里 `Uiplus.java` 的开头。
+
+车上怎么确认连的是哪一个：只装 BydModule 时应连上 BydModule；只装 UiSetting 时应连上 UiSetting；两个都装时仍是 BydModule。连上、还没授权时，顶上授权卡片有一行「已连接 BydModule」或「已连接 UiSetting」。点过「以后再说」、或者已经授权之后，齿轮里的设置最下面也有同样一行。logcat 过滤 `pet` 能看到 `bind BydModule` / `已连上 UiSetting`。
 
 ## 从源码打包
 
@@ -84,7 +86,7 @@ node build.mjs --install  # 打完用 adb install -r 装上（adb 要在 PATH �
 | `Pages.java` / `CarPage.java` / `CalendarPage.java` / `CountdownPage.java` | 车况 / 日历 / 倒数日页面 |
 | `Ai*.java` / `ai/` | 大模型聊天、聊天室、操作车机、联网搜索 |
 | `Panel.java` / `Sheet.java` / `Kit.java` / `Ui.java` / `Guide.java` | 设置面板、生日表单、面板小部件、按钮导航、新手引导 |
-| `Uiplus.java` / `DebugHost.java` / `Host.java` | 宿主接口（车上）、调试宿主（模拟器、手机） |
+| `Uiplus.java` / `DebugHost.java` / `Host.java` | 宿主接口（车上：先绑 BydModule，失败再绑 UiSetting）、调试宿主（模拟器、手机） |
 | `Lunar.java` / `Holidays.java` | 农历、节气、节日、放假安排 |
 
 ## 许可
