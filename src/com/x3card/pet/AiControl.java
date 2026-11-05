@@ -84,6 +84,7 @@ final class AiControl {
         new Def("vehicle.ac.setRearAuto", ps(B), "后排空调自动模式", 0, "true 自动、false 手动（手动不是关后排空调）"),
         new Def("vehicle.seat.setHeating", ps(SIDE, LV3), "座椅加热", 0, "0 关、1 低、2 高"), new Def("vehicle.seat.cycleHeating", ps(SIDE), "座椅加热换一档", 0, null),
         new Def("vehicle.seat.setVentilation", ps(SIDE, LV3), "座椅通风", 0, "0 关、1 低、2 高"), new Def("vehicle.seat.cycleVentilation", ps(SIDE), "座椅通风换一档", 0, null),
+        new Def("vehicle.steeringWheel.setHeating", ps(B), "方向盘加热", 0, "true 开、false 关（只有开关，没有档位）"),
         new Def("vehicle.body.setWindowsMode", ps(E("open", "close", "stop", "half", "vent")), "车窗", 1, "四个窗一起：全开、关、停、半开、通风"),
         new Def("vehicle.body.toggleWindowsMode", ps(E("open", "half", "vent")), "车窗切换", 1, "已经是这个状态就关上"),
         new Def("vehicle.body.setWindowPosition", ps(I(1, 4, "", nm(1, "左前窗", 2, "右前窗", 3, "左后窗", 4, "右后窗")), I(0, 100, "%", null)), "单个车窗", 1, "第一个是哪扇：1 左前、2 右前、3 左后、4 右后；第二个开到百分之几：0 全关、100 全开"),

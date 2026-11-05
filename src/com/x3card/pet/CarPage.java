@@ -124,7 +124,7 @@ final class CarPage implements Pages.Page {
         new TileDef("belt", "belt", "安全带", "seat.driver.beltFastened"),
         new TileDef("light", "light", "车灯", "light.lowBeam", "light.highBeam", "light.side", "light.daytimeRunning"),
         new TileDef("air", "air", "空气", "environment.pm25.outdoorLevel", "environment.pm25.indoorLevel"),
-        new TileDef("seat", "seat", "座椅", "seat.driver.heating", "seat.driver.ventilation", "seat.passenger.heating", "seat.passenger.ventilation"),
+        new TileDef("seat", "seat", "座椅", "seat.driver.heating", "seat.driver.ventilation", "seat.passenger.heating", "seat.passenger.ventilation", "steeringWheel.heating"),
         new TileDef("volume", "volume", "音量", "audio.volume", "audio.muted"),
         new TileDef("mode", "mode", "驾驶模式", "energy.operationMode", "energy.mode"),
         new TileDef("bolt", "bolt", "充电", "energy.chargingState", "energy.connectorState")
@@ -184,7 +184,8 @@ final class CarPage implements Pages.Page {
             r("ac.rear.power", "后排空调", F_ONOFF), r("ac.rear.temperature", "后排设温", F_TEMP), r("ac.rear.fanLevel", "后排风量", F_LEVEL),
             r("ac.rear.controlMode", "后排模式", ACMODE), r("ac.rear.windMode", "后排送风", WIND),
             r("seat.driver.heating", "主驾加热", F_SEAT), r("seat.passenger.heating", "副驾加热", F_SEAT),
-            r("seat.driver.ventilation", "主驾通风", F_SEAT), r("seat.passenger.ventilation", "副驾通风", F_SEAT)),
+            r("seat.driver.ventilation", "主驾通风", F_SEAT), r("seat.passenger.ventilation", "副驾通风", F_SEAT),
+            r("steeringWheel.heating", "方向盘加热", F_ONOFF)),
         new GrpDef("light", "灯光",
             r("light.lowBeam", "近光灯", F_ONOFF), r("light.highBeam", "远光灯", F_ONOFF), r("light.side", "示宽灯", F_ONOFF),
             r("light.daytimeRunning", "日行灯", F_ONOFF), r("light.frontFog", "前雾灯", F_ONOFF), r("light.rearFog", "后雾灯", F_ONOFF),
@@ -200,7 +201,8 @@ final class CarPage implements Pages.Page {
             r("body.windows.rearLeft.position", "左后窗", F_OPENING), r("body.windows.rearRight.position", "右后窗", F_OPENING),
             r("body.windows.anyOpen", "车窗", F_ANYWIN),
             r("body.windows.ventilation", "车窗通风", F_YESNO), r("body.windows.halfOpen", "车窗半开", F_YESNO),
-            r("body.sunroof.position", "天窗", F_OPENING), r("body.sunshade.position", "遮阳帘", F_OPENING)),
+            r("body.sunroof.position", "天窗", F_OPENING), r("body.sunshade.position", "遮阳帘", F_OPENING),
+            r("body.doors.lockState", "车门锁原码", F_STR), r("body.doors.remoteUnlocking", "远程解锁原码", F_STR)),
         new GrpDef("tyre", "轮胎",
             s("@tyre.frontLeft", "左前"), s("@tyre.frontRight", "右前"), s("@tyre.rearLeft", "左后"), s("@tyre.rearRight", "右后"),
             r("tyre.displayUnit", "胎压单位", F_STR)),
@@ -661,9 +663,11 @@ final class CarPage implements Pages.Page {
             }
             case "seat": {
                 Object dh = g("seat.driver.heating"), dv = g("seat.driver.ventilation"), ph = g("seat.passenger.heating"), pv = g("seat.passenger.ventilation");
-                if (dh == null && dv == null && ph == null && pv == null) return false;
-                tv = gt0(dh) ? "主驾加热" + lv(dh) : gt0(dv) ? "主驾通风" + lv(dv) : "关";
-                ts = gt0(ph) ? "副驾加热" + lv(ph) : gt0(pv) ? "副驾通风" + lv(pv) : "";
+                Object wh = g("steeringWheel.heating");
+                if (dh == null && dv == null && ph == null && pv == null && wh == null) return false;
+                boolean wOn = Boolean.TRUE.equals(wh);
+                tv = gt0(dh) ? "主驾加热" + lv(dh) : gt0(dv) ? "主驾通风" + lv(dv) : wOn ? "方向盘加热" : "关";
+                ts = join(gt0(ph) ? "副驾加热" + lv(ph) : gt0(pv) ? "副驾通风" + lv(pv) : "", wOn && !tv.equals("方向盘加热") ? "方向盘加热" : "");
                 tst = !tv.equals("关") || !ts.isEmpty() ? ST_ON : ST_NONE;
                 return true;
             }

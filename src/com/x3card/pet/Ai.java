@@ -221,6 +221,7 @@ final class Ai {
         if (Boolean.TRUE.equals(cv("ac.rearDefrost"))) s.add("后挡除雾开着");
         String[][] seats = { { "seat.driver.heating", "主驾座椅加热" }, { "seat.passenger.heating", "副驾座椅加热" }, { "seat.driver.ventilation", "主驾座椅通风" }, { "seat.passenger.ventilation", "副驾座椅通风" } };
         for (String[] x : seats) { Double lv = num(x[0]); if (lv != null && lv > 0) s.add(x[1] + (lv == 1 ? "低档" : "高档")); }
+        if (Boolean.TRUE.equals(cv("steeringWheel.heating"))) s.add("方向盘加热开着");
         if (truthy(cv("light.ambient.color"))) { String a = AMB.get(String.valueOf(cv("light.ambient.color"))); s.add("氛围灯" + (a != null ? a : "")); }
         Object om = cv("energy.operationMode");
         if (om != null && OPM.containsKey(String.valueOf(om))) s.add(OPM.get(String.valueOf(om)));

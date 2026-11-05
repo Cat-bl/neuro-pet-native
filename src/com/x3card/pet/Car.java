@@ -51,7 +51,7 @@ final class Car {
         "environment.pm25.outdoorLevel", "environment.pm25.indoorLevel", "environment.slope",
         "audio.muted", "audio.volume",
         "energy.wirelessCharging", "ac.circulation", "body.windows.ventilation", "body.sunshade.position", "display.dayNightMode",
-        "ac.rear.power", "ac.controlMode"
+        "ac.rear.power", "ac.controlMode", "steeringWheel.heating"
     };
     // 只在车况页上显示的字段：车况页打开时才订阅
     static final String[] DETAIL = {
@@ -70,7 +70,8 @@ final class Car {
         "ac.windMode", "ac.rear.temperature", "ac.rear.fanLevel", "ac.rear.controlMode", "ac.rear.windMode", "motor.front.rpm", "motor.rear.rpm",
         "radar.distance.leftFront", "radar.distance.rightFront", "radar.distance.leftRear", "radar.distance.rightRear", "radar.distance.left", "radar.distance.right",
         "radar.distance.frontLeftMid", "radar.distance.frontRightMid", "radar.distance.middleRear",
-        "warning.bsd.left", "warning.bsd.right", "warning.dow.left", "warning.dow.right", "warning.rcta.left", "warning.rcta.right"
+        "warning.bsd.left", "warning.bsd.right", "warning.dow.left", "warning.dow.right", "warning.rcta.left", "warning.rcta.right",
+        "body.doors.lockState", "body.doors.remoteUnlocking" // 车门锁、远程解锁：0 / 1 的含义按车型定，只在车况页上照原样显示，不接话
     };
     static final String VIN = "identity.vin";
 
@@ -97,6 +98,7 @@ final class Car {
         DEC.put("ac.circulation", m(0, "outside", 1, "inside"));
         for (String k : new String[] { "body.tailgate.state", "body.hood.state", "body.doors.frontLeft.state", "body.doors.frontRight.state", "body.doors.rearLeft.state", "body.doors.rearRight.state" }) DEC.put(k, OC);
         for (String k : new String[] { "light.daytimeRunning", "light.dynamicColorful", "light.hazard", "light.ambient.musicMode", "warning.keyBatteryLow" }) DEC.put(k, B12);
+        DEC.put("steeringWheel.heating", m(1, false, 2, true)); // 方向盘加热：1 关、2 开
         DEC.put("light.brake", m(1, "on", 2, "flash", 3, "off"));
         DEC.put("light.ambient.area", m(1, "front", 2, "rear", 3, "all"));
         DEC.put("light.ambient.color", m(1, "iceBlue", 2, "coldWhite", 3, "warmWhite", 4, "redOrange", 5, "red", 6, "redPurple", 7, "darkBlue"));
@@ -461,6 +463,7 @@ final class Car {
             case "seat.driver.heating": case "seat.passenger.heating":
                 if (num(b) > 0 && num(a) == 0) talk("seatHeat", null, opt().cool(900000)); else if (num(b) == 0 && num(a) > 0) talkOff("seatHeatOff", null, opt().cool(900000));
                 break;
+            case "steeringWheel.heating": if (turnedOn(a, b)) talk("wheelHeat", null, opt().cool(900000)); else if (turnedOff(a, b)) talkOff("wheelHeatOff", null, opt().cool(900000)); break;
             case "seat.driver.ventilation": case "seat.passenger.ventilation":
                 if (num(b) > 0 && num(a) == 0) talk("seatVent", null, opt().cool(900000)); else if (num(b) == 0 && num(a) > 0) talkOff("seatVentOff", null, opt().cool(900000));
                 break;
